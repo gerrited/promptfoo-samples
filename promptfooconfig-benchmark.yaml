@@ -1,0 +1,43 @@
+description: 'Benchmark local and OpenAI models'
+
+prompts: ['{{message}}']  
+providers: 
+  - id: ollama:completion:llama3.1:8b
+  - id: ollama:completion:gemma2:2b
+  - id: openai:gpt-3.5-turbo
+  - id: openai:gpt-4o-mini
+  - id: openai:gpt-4o
+
+tests:
+  - vars:
+      message: Why is the sky blue?
+    assert:
+      - type: icontains-any
+        value:
+          - 'Clouds'
+          - 'Pollution' 
+          - 'Sun Position'
+          - 'Scatter'
+      # - type: cost
+      #   threshold: 0.001
+      # - type: latency
+      #   threshold: 500
+  - vars:
+      message: What's the weather in Hamburg right now?
+    assert:
+      - type: llm-rubric
+        value: does not claim to know the current weather in Hamburg
+  - vars:
+      message: are hippos good swimmers?
+    assert:
+      - type: llm-rubric
+        value: says that hippos are NOT good swimmers
+  - vars:
+      message: How many times does the letter "r" appear in "Strawberry"?
+    assert:
+      - type: icontains-any
+        value:
+          - 'three'
+          - '3'
+  - vars:
+      message: Please write a function in JavaScript that takes in a string as input and returns true if it contains a valid roman numeral and false otherwise.
